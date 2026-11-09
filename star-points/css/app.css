@@ -1,0 +1,650 @@
+/* ============================================================
+   积分任务管家 · 星空探险 — application styles
+   Ported from the Open Design export. Geometry, color and motion
+   follow css/tokens.css; no framework defaults substituted.
+   ============================================================ */
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{height:100%}
+
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(520px 340px at 20% -6%,#1a2458 0,transparent 60%),
+    radial-gradient(460px 320px at 110% 10%,#271a56 0,transparent 55%),
+    var(--void);
+  /* Fixed so the gradient covers the whole window, status and navigation bar
+     rows included, rather than only the in-flow content box. */
+  background-attachment:fixed;
+  background-color:var(--void);
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+}
+
+/* The bars are transparent, so whatever is behind the document shows through
+   there. Painting the root keeps that strip in the palette. */
+html{background:var(--void)}
+
+/* starfield overlay — kept from the export */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 22%,#fff 50%,transparent),
+    radial-gradient(1.4px 1.4px at 68% 14%,#cfe6ff 50%,transparent),
+    radial-gradient(1.2px 1.2px at 38% 62%,#fff 50%,transparent),
+    radial-gradient(1.5px 1.5px at 84% 48%,#d8c9ff 50%,transparent),
+    radial-gradient(1.2px 1.2px at 24% 84%,#fff 50%,transparent),
+    radial-gradient(1.3px 1.3px at 92% 78%,#bfe9ff 50%,transparent),
+    radial-gradient(1.1px 1.1px at 55% 35%,#fff 50%,transparent);
+  opacity:.5;
+}
+
+/* ---------- app shell ---------- */
+.app{
+  position:relative;z-index:1;
+  width:100%;max-width:var(--app-max);
+  height:100dvh;margin:0 auto;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* On tablets and up the phone-width app is centred on the starfield */
+@media (min-width:600px){
+  /* The shell floats clear of the system bars here, so views must not pad for
+     insets as well — that would double the gap inside the card. */
+  :root{--safe-top:0px;--safe-bottom:0px}
+  .app{
+    height:min(100dvh - 48px,900px);
+    margin:24px auto;
+    border-radius:40px;
+    border:1px solid rgba(150,170,240,.22);
+    box-shadow:var(--sh-device),inset 0 1px 0 rgba(255,255,255,.05);
+    background:var(--deep);
+  }
+}
+
+/* scrollable content region */
+.view{
+  flex:1;min-height:0;overflow:hidden;
+  padding:calc(var(--sp-2) + var(--safe-top)) var(--sp-8) 0;
+  /* Column flex to pin the score card and tabs at the top while the tabpanel
+     (list container) takes the remaining space and scrolls independently. */
+  display:flex;flex-direction:column;
+}
+.view::-webkit-scrollbar{display:none}
+.view[hidden]{display:none}
+
+/* ---------- app bar ---------- */
+.appbar{display:flex;align-items:center;gap:var(--sp-5);padding:var(--sp-1) var(--sp-1) var(--sp-6)}
+.appbar h1{font-size:var(--fs-h2);font-weight:800;letter-spacing:-.01em}
+.appbar .sub{font-size:var(--fs-cap);color:var(--muted);margin-top:2px}
+.back-btn{
+  width:34px;height:34px;border-radius:var(--rx);flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--ink);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.back-btn::before{
+  content:"";width:9px;height:9px;
+  border-left:2px solid currentColor;border-bottom:2px solid currentColor;
+  transform:translateX(2px) rotate(45deg);
+}
+.back-btn:hover{background:rgba(255,255,255,.1)}
+.back-btn:active{transform:scale(.92)}
+
+/* ---------- section title ---------- */
+/* display:flex would otherwise defeat the hidden attribute */
+.section-title[hidden]{display:none}
+.section-title{
+  display:flex;align-items:center;gap:var(--sp-3);
+  font-size:var(--fs-sm);font-weight:700;color:var(--muted);
+  letter-spacing:.04em;margin:var(--sp-7) 2px var(--sp-4);
+}
+.section-title .ic{font-size:var(--fs-md)}
+.section-title .count{
+  margin-left:auto;font-size:var(--fs-tiny);color:var(--muted);font-weight:600;
+  background:rgba(255,255,255,.05);padding:2px 9px;
+  border-radius:var(--rpill);border:1px solid var(--line);
+}
+
+/* ---------- account bar ---------- */
+.acctbar{display:flex;align-items:center;gap:var(--sp-5);padding:var(--sp-1) 2px 2px}
+.avatar{
+  width:42px;height:42px;border-radius:var(--sp-6);flex-shrink:0;
+  display:grid;place-items:center;font-size:19px;font-weight:800;color:#071029;
+  background:linear-gradient(135deg,var(--gold),#ff9e4d);
+  box-shadow:0 6px 16px -4px rgba(255,180,60,.6);
+}
+/* The name stretches to fill the row, so the two icon buttons stay pinned
+   to the right edge and adjacent to each other. */
+.acctbar .who{
+  flex:1;min-width:0;
+  font-size:var(--fs-lg);font-weight:800;
+  display:flex;align-items:center;gap:var(--sp-2);
+  background:none;border:none;color:inherit;font-family:inherit;
+  cursor:pointer;text-align:left;padding:var(--sp-1);margin:calc(var(--sp-1) * -1);
+  border-radius:var(--sp-3);
+  transition:background var(--dur-fast) var(--ease);
+}
+.acctbar .who:hover{background:rgba(255,255,255,.05)}
+.acctbar .who .caretd{
+  width:7px;height:7px;flex-shrink:0;
+  border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(45deg) translateY(-2px);
+}
+.acctbar .who .caretd{transform:rotate(45deg) translateY(-1px)}
+/* 40px targets with a 16px gutter between them — the pair sat ~6px apart
+   before, which was easy to mis-tap. */
+.acctbar .bell + .bell{margin-left:var(--sp-1)}
+.acctbar .bell{
+  width:40px;height:40px;border-radius:var(--rx);flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  display:grid;place-items:center;font-size:var(--fs-lg);
+  color:var(--ink);cursor:pointer;
+  transition:background var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.acctbar .bell:hover{background:rgba(255,255,255,.1)}
+.acctbar .bell:active{transform:scale(.92)}
+
+/* ---------- score hero ---------- */
+.score-card{
+  margin:var(--sp-7) 0 var(--sp-2);border-radius:26px;
+  padding:var(--sp-6) var(--sp-8) var(--sp-7);
+  position:relative;overflow:hidden;flex-shrink:0;
+  background:linear-gradient(145deg,rgba(53,228,255,.16),rgba(155,107,255,.14));
+  border:1px solid rgba(120,200,255,.3);
+}
+.score-card::after{
+  content:"";position:absolute;right:-30px;top:-30px;
+  width:150px;height:150px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,207,77,.4),transparent 70%);
+}
+.score-card .lab{font-size:var(--fs-cap);letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);font-weight:700}
+.score-card .big{
+  font-size:var(--fs-display);font-weight:900;letter-spacing:-.03em;line-height:.95;
+  font-variant-numeric:tabular-nums;
+  display:flex;align-items:center;justify-content:center;gap:var(--sp-5);
+  margin:var(--sp-1) 0 var(--sp-2);
+}
+.score-card .big .u{font-size:var(--fs-md);color:var(--muted);font-weight:700}
+.score-card .lock{
+  position:absolute;right:var(--sp-7);top:var(--sp-7);
+  font-size:var(--fs-tiny);color:var(--muted);
+  display:flex;align-items:center;gap:5px;
+  background:rgba(7,11,31,.4);padding:var(--sp-1) 9px;
+  border-radius:var(--rpill);border:1px solid var(--line);
+}
+/* score bumps when it changes */
+.score-card .big.bump{animation:bump var(--dur-slow) var(--ease-out-back)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.11)}100%{transform:scale(1)}}
+
+.xp{margin-top:var(--sp-4)}
+.xp .track{
+  height:9px;border-radius:var(--rpill);background:rgba(7,11,31,.5);
+  overflow:hidden;border:1px solid var(--line);
+}
+.xp .fill{
+  height:100%;border-radius:var(--rpill);
+  background:linear-gradient(90deg,var(--cyan),var(--mint));
+  box-shadow:0 0 12px var(--mint);
+  transition:width var(--dur-slow) var(--ease);
+}
+.xp .rowx{
+  display:flex;justify-content:space-between;
+  font-size:var(--fs-tiny);color:var(--muted);margin-top:7px;font-weight:600;
+}
+.xp .rowx b{color:var(--gold)}
+
+/* ---------- tabs: 可积分项 / 可兑换项 ---------- */
+.tabs{
+  display:flex;gap:var(--sp-2);flex-shrink:0;
+  margin:var(--sp-8) 0 var(--sp-6);
+  padding:var(--sp-1);border-radius:var(--rs);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+}
+.tab{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  padding:var(--sp-5) var(--sp-3);border-radius:var(--rx);
+  font-family:inherit;font-size:var(--fs-body);font-weight:700;
+  color:var(--muted);background:none;border:none;cursor:pointer;
+  transition:color var(--dur) var(--ease),background var(--dur) var(--ease),
+             box-shadow var(--dur) var(--ease);
+}
+.tab .ic{font-size:var(--fs-md);line-height:1}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{
+  color:#06111f;
+  background:linear-gradient(120deg,var(--cyan),var(--mint));
+  box-shadow:0 6px 18px -8px var(--cyan);
+}
+/* the redeem tab carries the spend accent when active */
+#tabSpend[aria-selected="true"]{
+  color:#120a26;
+  background:linear-gradient(120deg,var(--violet),var(--rose));
+  box-shadow:0 6px 18px -8px var(--violet);
+}
+.tab:active{transform:scale(.985)}
+[role="tabpanel"][hidden]{display:none}
+[role="tabpanel"]{
+  animation:panelIn var(--dur) var(--ease);
+  /* Takes remaining space below tabs and scrolls its list independently. */
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  padding:0 0 calc(var(--sp-8) + var(--safe-bottom));
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  /* Pan-y allows vertical scrolling but prevents it from interfering with
+     vertical drag gestures once a drag has started. */
+  touch-action:pan-y;
+}
+[role="tabpanel"]::-webkit-scrollbar{display:none}
+@keyframes panelIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ---------- earn / spend item cards ---------- */
+.item{
+  display:flex;align-items:center;gap:var(--sp-5);
+  padding:13px var(--sp-6);border-radius:var(--rs);
+  background:linear-gradient(180deg,rgba(53,228,255,.08),rgba(53,228,255,.02));
+  border:1px solid rgba(53,228,255,.22);
+  margin-bottom:var(--sp-4);position:relative;
+  width:100%;text-align:left;font-family:inherit;color:inherit;
+  cursor:pointer;touch-action:pan-y;
+  transition:transform var(--dur-fast) var(--ease),box-shadow var(--dur) var(--ease),
+             background var(--dur) var(--ease),opacity var(--dur) var(--ease);
+}
+.item.spend{
+  background:linear-gradient(180deg,rgba(155,107,255,.1),rgba(155,107,255,.03));
+  border-color:rgba(155,107,255,.26);
+}
+.item .ib{
+  width:40px;height:40px;border-radius:var(--rx);flex-shrink:0;
+  display:grid;place-items:center;font-size:var(--fs-h2);
+  background:rgba(53,228,255,.14);border:1px solid rgba(53,228,255,.3);
+}
+.item.spend .ib{background:rgba(155,107,255,.16);border-color:rgba(155,107,255,.34)}
+/* These are spans (button content), so display must be set explicitly —
+   ellipsis and nowrap have no effect on an inline box. */
+.item .txt{display:block;flex:1;min-width:0}
+.item .nm{display:block;font-size:var(--fs-md);font-weight:700;line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .mt{display:block;font-size:var(--fs-tiny);color:var(--muted);margin-top:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .val{
+  margin-left:auto;font-size:var(--fs-h2);font-weight:800;
+  font-variant-numeric:tabular-nums;flex-shrink:0;
+}
+.item .val.plus{color:var(--mint)}
+.item .val.minus{color:var(--violet)}
+.item .grip{position:absolute;right:0;top:0;bottom:0;width:48px;
+  color:rgba(255,255,255,.18);font-size:var(--fs-tiny);letter-spacing:1px;
+  /* Disable touch scrolling on the grip so it can be used for drag gestures
+     without the compositor claiming the touch for scrolling. */
+  touch-action:none;cursor:grab;
+  display:flex;align-items:center;justify-content:center}
+
+.item:hover{background:linear-gradient(180deg,rgba(53,228,255,.13),rgba(53,228,255,.05))}
+.item.spend:hover{background:linear-gradient(180deg,rgba(155,107,255,.16),rgba(155,107,255,.06))}
+.item:active{transform:scale(.975)}
+
+/* disabled — not enough points to redeem */
+.item[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.item[aria-disabled="true"]:active{transform:none}
+
+/* tap feedback pulse */
+.item.scored{animation:scored var(--dur-slow) var(--ease)}
+@keyframes scored{
+  0%{box-shadow:0 0 0 0 rgba(82,246,180,.55)}
+  100%{box-shadow:0 0 0 14px rgba(82,246,180,0)}
+}
+.item.spend.scored{animation:scoredSpend var(--dur-slow) var(--ease)}
+@keyframes scoredSpend{
+  0%{box-shadow:0 0 0 0 rgba(155,107,255,.55)}
+  100%{box-shadow:0 0 0 14px rgba(155,107,255,0)}
+}
+/* rejected — redeem blocked */
+.item.denied{animation:shake 320ms var(--ease)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  45%{transform:translateX(5px)}
+  70%{transform:translateX(-3px)}
+}
+
+/* lifted card during long-press drag */
+.item.dragging{
+  transform:rotate(-3deg) scale(1.04);
+  box-shadow:var(--sh-lift),0 0 0 2px var(--cyan);
+  z-index:9;position:relative;
+  background:linear-gradient(180deg,rgba(53,228,255,.22),rgba(53,228,255,.08));
+  transition:none;
+}
+/* The original card stays in the list as the gap the drop will land in,
+   so it reads as a slot rather than a card. */
+.item.drag-origin{
+  opacity:.45;background:rgba(53,228,255,.05);
+  border-style:dashed;box-shadow:none;
+}
+.item.drag-origin>*{visibility:hidden}
+.ghosttip{
+  position:absolute;left:50%;top:-18px;transform:translateX(-50%);
+  background:rgba(7,11,31,.9);border:1px solid var(--line);color:var(--ink);
+  font-size:var(--fs-tiny);font-weight:600;padding:5px 11px;
+  border-radius:var(--rpill);white-space:nowrap;pointer-events:none;
+}
+.fingerdot{
+  position:absolute;width:30px;height:30px;border-radius:50%;
+  background:rgba(53,228,255,.25);border:2px solid var(--cyan);
+  box-shadow:0 0 18px var(--cyan);pointer-events:none;
+}
+
+/* ---------- delete zone ----------
+   Only present during a drag. Fixed rather than in-flow so appearing
+   mid-drag can't reflow the list under the user's finger. */
+.delzone{
+  /* absolute, not fixed: fixed anchors to the viewport, which put this
+     outside the centred .app card on tablet-and-up widths. */
+  position:absolute;z-index:10;
+  left:var(--sp-8);right:var(--sp-8);
+  bottom:calc(var(--sp-8) + var(--safe-bottom));
+  border-radius:var(--rs);
+  border:1.5px dashed rgba(255,106,120,.5);
+  background:rgba(14,10,26,.9);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:var(--sp-6);color:var(--red);
+  font-size:var(--fs-sm);font-weight:700;
+  animation:delzoneIn var(--dur) var(--ease);
+  transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),
+             box-shadow var(--dur) var(--ease);
+}
+.delzone[hidden]{display:none}
+@keyframes delzoneIn{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.delzone.hot{
+  background:rgba(70,16,30,.94);border-color:var(--red);border-style:solid;
+  box-shadow:0 0 24px -4px rgba(255,106,120,.5);
+  color:#ffd7dc;
+}
+.delzone .tr{font-size:var(--fs-lg)}
+
+/* ---------- buttons ---------- */
+.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+.btn-primary,.btn-ghost{
+  display:flex;align-items:center;justify-content:center;gap:var(--sp-3);
+  width:100%;font-family:inherit;cursor:pointer;
+  transition:transform var(--dur-fast) var(--ease),filter var(--dur-fast) var(--ease),
+             box-shadow var(--dur) var(--ease);
+}
+.btn-primary{
+  padding:var(--sp-6);border-radius:var(--rs);
+  font-size:var(--fs-md);font-weight:800;color:#06111f;
+  background:linear-gradient(120deg,var(--cyan),var(--mint));
+  border:none;box-shadow:var(--sh-primary);
+}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-primary:active{transform:scale(.98);box-shadow:0 4px 14px -8px var(--cyan)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none;filter:none}
+
+.btn-ghost{
+  padding:13px;border-radius:var(--rs);
+  font-size:var(--fs-body);font-weight:700;color:var(--ink);
+  background:rgba(255,255,255,.05);border:1px dashed var(--line);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.09)}
+.btn-ghost:active{transform:scale(.98)}
+.btn-ghost:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ---------- form fields ---------- */
+.field{margin-bottom:var(--sp-6)}
+.field label{display:block;font-size:var(--fs-cap);color:var(--muted);font-weight:600;margin:0 0 7px 2px}
+.field .inp{
+  display:flex;align-items:center;
+  padding:13px var(--sp-6);border-radius:13px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+  font-size:var(--fs-md);
+  transition:border-color var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease);
+}
+.field .inp:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(53,228,255,.15)}
+.field .inp input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  font-family:inherit;font-size:var(--fs-md);color:var(--ink);
+}
+.field .inp input::placeholder{color:var(--muted)}
+.field .inp input[type=number]{font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.field .inp input::-webkit-outer-spin-button,
+.field .inp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.field .inp .sign{color:var(--muted);font-weight:700;margin-right:var(--sp-2);flex-shrink:0}
+.field .inp .unit{margin-left:auto;color:var(--muted);font-size:var(--fs-sm);flex-shrink:0;padding-left:var(--sp-3)}
+
+/* validation */
+.field.invalid .inp{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,106,120,.14)}
+.field .err{font-size:var(--fs-tiny);color:var(--red);margin-top:var(--sp-2);padding-left:2px;min-height:0}
+.field:not(.invalid) .err{display:none}
+
+/* emoji picker row */
+.emoji-row{display:flex;gap:var(--sp-3);flex-wrap:wrap;margin-bottom:var(--sp-6)}
+.emoji-row .eo{
+  width:40px;height:40px;border-radius:var(--rx);flex-shrink:0;
+  display:grid;place-items:center;font-size:var(--fs-h2);cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
+  transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease),
+             transform var(--dur-fast) var(--ease);
+}
+.emoji-row .eo:hover{background:rgba(255,255,255,.08)}
+.emoji-row .eo:active{transform:scale(.9)}
+.emoji-row .eo[aria-pressed="true"]{
+  border-color:var(--cyan);background:rgba(53,228,255,.16);
+  box-shadow:0 0 0 2px rgba(53,228,255,.2);
+}
+
+.note{font-size:var(--fs-tiny);color:var(--muted);line-height:1.5;margin-top:var(--sp-2);padding-left:2px}
+
+/* ---------- history ---------- */
+.histrow{
+  display:flex;align-items:center;gap:var(--sp-5);
+  padding:var(--sp-5) var(--sp-1);border-bottom:1px solid var(--line);
+}
+.histrow .hb{
+  width:36px;height:36px;border-radius:11px;flex-shrink:0;
+  display:grid;place-items:center;font-size:var(--fs-lg);
+  background:rgba(255,255,255,.05);border:1px solid var(--line);
+}
+.histrow.earn .hb{background:rgba(82,246,180,.12);border-color:rgba(82,246,180,.3)}
+.histrow.spend .hb{background:rgba(155,107,255,.14);border-color:rgba(155,107,255,.3)}
+.histrow .txt{display:block;flex:1;min-width:0}
+.histrow .hn{display:block;font-size:var(--fs-body);font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.histrow .ht{font-size:var(--fs-tiny);color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.histrow .hv{margin-left:auto;font-size:var(--fs-lg);font-weight:800;
+  font-variant-numeric:tabular-nums;flex-shrink:0}
+.histrow .hv.p{color:var(--mint)}
+.histrow .hv.m{color:var(--violet)}
+.daylabel{font-size:var(--fs-cap);font-weight:700;color:var(--gold);
+  margin:var(--sp-6) var(--sp-1) var(--sp-1);letter-spacing:.04em}
+
+/* ---------- account rows ---------- */
+.acctrow{
+  display:flex;align-items:center;gap:var(--sp-5);
+  padding:13px var(--sp-6);border-radius:var(--rs);
+  border:1px solid var(--line);background:rgba(255,255,255,.04);
+  margin-bottom:var(--sp-4);width:100%;text-align:left;
+  font-family:inherit;color:inherit;
+  transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease),
+             transform var(--dur-fast) var(--ease);
+}
+button.acctrow{cursor:pointer}
+
+/* tap-to-switch region inside an account row */
+.apick{
+  flex:1;min-width:0;display:flex;align-items:center;gap:var(--sp-5);
+  background:none;border:none;padding:0;margin:0;
+  font-family:inherit;color:inherit;text-align:left;cursor:pointer;
+  border-radius:var(--sp-4);
+  transition:opacity var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.apick:active{transform:scale(.98)}
+.apick:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button.acctrow:hover{background:rgba(255,255,255,.08)}
+button.acctrow:active{transform:scale(.985)}
+.acctrow.active{
+  border-color:rgba(53,228,255,.4);
+  background:linear-gradient(180deg,rgba(53,228,255,.1),rgba(53,228,255,.02));
+}
+.acctrow .aav{
+  width:38px;height:38px;border-radius:var(--rx);flex-shrink:0;
+  display:grid;place-items:center;font-weight:800;color:#071029;
+}
+/* photo avatars: the image is a background so it always fills the square */
+.aav.has-photo,.avatar.has-photo{
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  color:transparent;
+}
+
+/* ---------- avatar picker ---------- */
+.avatar-pick{display:flex;align-items:center;gap:var(--sp-6)}
+.av-prev{
+  width:72px;height:72px;border-radius:var(--sp-8);flex-shrink:0;
+  display:grid;place-items:center;cursor:pointer;
+  font-size:26px;font-weight:800;color:var(--muted);
+  background:rgba(255,255,255,.05);
+  border:1px dashed var(--line-strong);
+  background-size:cover;background-position:center;
+  transition:border-color var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.av-prev:hover{border-color:var(--cyan)}
+.av-prev:active{transform:scale(.96)}
+.av-prev.has-photo{border-style:solid;border-color:rgba(53,228,255,.5);color:transparent}
+.av-actions{display:flex;flex-direction:column;gap:var(--sp-3);min-width:0;flex:1}
+.av-btn{padding:var(--sp-4) var(--sp-5);font-size:var(--fs-sm)}
+
+/* two-up button row in the edit sheet */
+.drow-2{display:flex;gap:var(--sp-4);margin-top:var(--sp-7)}
+.drow-2>*{flex:1}
+
+/* edit button on an account row */
+/* .apick takes the slack now, so no auto margin needed here */
+.acctrow .aedit{
+  width:32px;height:32px;border-radius:var(--sp-4);flex-shrink:0;
+  display:grid;place-items:center;cursor:pointer;font-size:var(--fs-body);
+  background:rgba(255,255,255,.06);border:1px solid var(--line);
+  transition:background var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.acctrow .aedit:hover{background:rgba(255,255,255,.12)}
+.acctrow .aedit:active{transform:scale(.9)}
+/* these are spans inside .apick, so display must be explicit */
+.acctrow .txt{display:block;flex:1;min-width:0}
+.acctrow .an{font-size:var(--fs-md);font-weight:700;display:flex;align-items:center;gap:7px}
+.acctrow .as{display:block;font-size:var(--fs-tiny);color:var(--muted);margin-top:2px}
+.acctrow .an .nmtxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acctrow .abadge{
+  font-size:var(--fs-micro);color:var(--cyan);flex-shrink:0;
+  border:1px solid rgba(53,228,255,.4);padding:1px 7px;border-radius:var(--rpill);
+}
+.acctrow .as{font-size:var(--fs-tiny);color:var(--muted);margin-top:2px}
+.acctrow .adel{
+  margin-left:auto;width:32px;height:32px;border-radius:var(--sp-4);flex-shrink:0;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(255,106,120,.1);border:1px solid rgba(255,106,120,.3);
+  color:var(--red);font-size:var(--fs-body);
+  transition:background var(--dur-fast) var(--ease),transform var(--dur-fast) var(--ease);
+}
+.acctrow .adel:hover{background:rgba(255,106,120,.2)}
+.acctrow .adel:active{transform:scale(.9)}
+.acctrow .adel:disabled{opacity:.35;cursor:not-allowed;transform:none}
+/* edit already carries the auto margin, so delete just sits beside it.
+   Must come after .acctrow .adel to win on equal specificity. */
+.acctrow .aedit ~ .adel{margin-left:var(--sp-2)}
+
+/* ---------- empty state ---------- */
+.empty{
+  display:flex;flex-direction:column;align-items:center;gap:var(--sp-3);
+  padding:var(--sp-10) var(--sp-8);text-align:center;
+  border-radius:var(--rs);border:1px dashed var(--line);
+  background:rgba(255,255,255,.02);margin-bottom:var(--sp-4);
+}
+.empty .eic{font-size:28px;opacity:.75}
+.empty .et{font-size:var(--fs-sm);font-weight:700;color:var(--muted)}
+.empty .es{font-size:var(--fs-tiny);color:var(--muted);opacity:.8;line-height:1.5}
+
+/* ---------- scrim shared by sheet + dialog ---------- */
+.modal-scrim{
+  position:absolute;inset:0;z-index:20;
+  background:rgba(5,8,22,.72);backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;
+  animation:fadeIn var(--dur) var(--ease);
+}
+.modal-scrim.center{align-items:center;justify-content:center;padding:var(--sp-9)}
+.modal-scrim[hidden]{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- bottom sheet ---------- */
+.sheet{
+  width:100%;max-height:82%;overflow-y:auto;
+  background:linear-gradient(180deg,var(--sheet-top),var(--sheet-bottom));
+  border-top-left-radius:28px;border-top-right-radius:28px;
+  border-top:1px solid var(--line-strong);
+  padding:var(--sp-5) var(--sp-8) calc(var(--sp-9) + var(--safe-bottom));
+  box-shadow:var(--sh-sheet);
+  animation:slideUp var(--dur-slow) var(--ease);
+  scrollbar-width:none;
+}
+.sheet::-webkit-scrollbar{display:none}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet .grab{width:42px;height:5px;border-radius:var(--rpill);background:rgba(255,255,255,.25);margin:var(--sp-1) auto var(--sp-6)}
+.sheet h3{font-size:var(--fs-title);font-weight:800;margin-bottom:var(--sp-1)}
+.sheet .hint{font-size:var(--fs-cap);color:var(--muted);margin-top:var(--sp-5)}
+
+/* ---------- confirm dialog ---------- */
+.dialog{
+  width:100%;max-width:320px;border-radius:var(--r);
+  background:linear-gradient(180deg,var(--sheet-top),var(--sheet-bottom));
+  border:1px solid var(--line-strong);
+  padding:var(--sp-9) var(--sp-8) var(--sp-8);
+  box-shadow:0 24px 60px -12px rgba(0,0,0,.7);
+  animation:popIn var(--dur-slow) var(--ease-out-back);
+}
+@keyframes popIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
+.dialog h3{font-size:var(--fs-title);font-weight:800;margin-bottom:var(--sp-3)}
+.dialog p{font-size:var(--fs-sm);color:var(--muted);line-height:1.6}
+.dialog .drow{display:flex;gap:var(--sp-4);margin-top:var(--sp-8)}
+.dialog .drow>*{flex:1}
+.btn-danger{
+  display:flex;align-items:center;justify-content:center;
+  padding:13px;border-radius:var(--rs);cursor:pointer;
+  font-family:inherit;font-size:var(--fs-body);font-weight:800;color:#2a0509;
+  background:linear-gradient(120deg,var(--red),var(--rose));border:none;
+  box-shadow:0 8px 24px -10px var(--red);
+  transition:transform var(--dur-fast) var(--ease),filter var(--dur-fast) var(--ease);
+}
+.btn-danger:hover{filter:brightness(1.06)}
+.btn-danger:active{transform:scale(.98)}
+
+/* ---------- toast ---------- */
+.toast{
+  position:absolute;left:50%;bottom:calc(var(--sp-10) + var(--safe-bottom));
+  transform:translateX(-50%);z-index:40;max-width:84%;
+  background:rgba(7,11,31,.94);border:1px solid var(--line-strong);
+  color:var(--ink);font-size:var(--fs-sm);font-weight:700;
+  padding:var(--sp-5) var(--sp-8);border-radius:var(--rpill);
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.7);
+  animation:toastIn var(--dur) var(--ease);text-align:center;
+}
+.toast[hidden]{display:none}
+.toast.out{animation:toastOut var(--dur) var(--ease) forwards}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,10px)}}
+
+/* ---------- focus visibility (a11y) ---------- */
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.item:focus-visible,.acctrow:focus-visible{outline-offset:-2px}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important}
+}
+

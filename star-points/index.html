@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#070b1f" />
+<title>成为学霸</title>
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ====================== 1 · HOME ====================== -->
+  <main class="view" id="view-home">
+    <div class="acctbar">
+      <div class="avatar" id="homeAvatar">J</div>
+      <button class="who" id="btnSwitch" aria-haspopup="dialog" aria-label="切换账户">
+        <span id="homeName">Jiamu</span>
+        <span class="caretd" aria-hidden="true"></span>
+      </button>
+      <button class="bell" id="btnHistory" aria-label="历史记录">🔔</button>
+      <button class="bell" id="btnSettings" aria-label="设置">⚙️</button>
+    </div>
+
+    <section class="score-card">
+      <div class="lab">全部积分</div>
+      <div class="big" id="scoreBig"><span id="scoreNum">0</span> <span class="u">星</span></div>
+      <div class="xp">
+        <div class="track"><div class="fill" id="xpFill"></div></div>
+        <div class="rowx"><span id="xpLevel">探险等级 Lv.1</span><span id="xpNext">再 <b>100</b> 升 Lv.2</span></div>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist" aria-label="项目类型">
+      <button class="tab" id="tabEarn" role="tab" aria-selected="true"
+              aria-controls="panelEarn"><span class="ic">✅</span>可积分项</button>
+      <button class="tab" id="tabSpend" role="tab" aria-selected="false"
+              aria-controls="panelSpend"><span class="ic">🎁</span>可兑换项</button>
+    </div>
+
+    <div id="panelEarn" role="tabpanel" aria-labelledby="tabEarn">
+      <div id="earnList"></div>
+    </div>
+    <div id="panelSpend" role="tabpanel" aria-labelledby="tabSpend" hidden>
+      <div id="spendList"></div>
+    </div>
+  </main>
+
+  <!-- ====================== 2 · HISTORY ====================== -->
+  <main class="view" id="view-history" hidden>
+    <div class="appbar">
+      <button class="back-btn" data-back aria-label="返回"></button>
+      <div>
+        <h1>历史记录</h1>
+        <div class="sub" id="histSub">本周 +0 / −0</div>
+      </div>
+    </div>
+    <div id="histList"></div>
+  </main>
+
+  <!-- ====================== 3 · ADD ITEMS ====================== -->
+  <main class="view" id="view-add" hidden>
+    <div class="appbar">
+      <button class="back-btn" data-back aria-label="返回"></button>
+      <div>
+        <h1 id="addTitle">添加积分项</h1>
+        <div class="sub" id="addSub">新增任务或奖励</div>
+      </div>
+    </div>
+
+    <h2 class="section-title" id="titleEarn"><span class="ic">✅</span>新建可积分项</h2>
+    <form id="formEarn" novalidate>
+      <div class="field" id="fEarnName">
+        <label for="earnName">项目名称</label>
+        <div class="inp"><input id="earnName" type="text" maxlength="14" placeholder="例如：练钢琴 30 分钟" autocomplete="off" /></div>
+        <div class="err">请输入项目名称</div>
+      </div>
+      <div class="field">
+        <label>选个图标</label>
+        <div class="emoji-row" id="earnEmoji" role="group" aria-label="积分项图标"></div>
+      </div>
+      <div class="field" id="fEarnVal">
+        <label for="earnVal">积分分值</label>
+        <div class="inp"><span class="sign">＋</span><input id="earnVal" type="number" inputmode="numeric" min="1" max="999" placeholder="15" /><span class="unit">星 / 次</span></div>
+        <div class="err">请输入 1–999 的整数</div>
+      </div>
+      <button class="btn-primary" type="submit">＋ 添加到任务</button>
+    </form>
+
+    <h2 class="section-title" id="titleSpend" style="margin-top:22px"><span class="ic">🎁</span>新建可兑换项</h2>
+    <form id="formSpend" novalidate>
+      <div class="field" id="fSpendName">
+        <label for="spendName">兑换项目名称</label>
+        <div class="inp"><input id="spendName" type="text" maxlength="14" placeholder="例如：玩游戏 30 分钟" autocomplete="off" /></div>
+        <div class="err">请输入兑换项目名称</div>
+      </div>
+      <div class="field">
+        <label>选个图标</label>
+        <div class="emoji-row" id="spendEmoji" role="group" aria-label="兑换项图标"></div>
+      </div>
+      <div class="field" id="fSpendVal">
+        <label for="spendVal">扣除分值</label>
+        <div class="inp"><span class="sign">－</span><input id="spendVal" type="number" inputmode="numeric" min="1" max="999" placeholder="20" /><span class="unit">星 / 次</span></div>
+        <div class="err">请输入 1–999 的整数</div>
+      </div>
+      <button class="btn-ghost" type="submit">＋ 添加到奖励</button>
+      <p class="note">分值只能是正整数。保存后会出现在主界面对应区域，点击即生效。</p>
+    </form>
+  </main>
+
+  <!-- ====================== 4 · ACCOUNTS ====================== -->
+  <main class="view" id="view-accounts" hidden>
+    <div class="appbar">
+      <button class="back-btn" data-back aria-label="返回"></button>
+      <div>
+        <h1>账户管理</h1>
+      </div>
+    </div>
+
+    <h2 class="section-title"><span class="ic">👥</span>全部账户<span class="count" id="acctCount">0 人</span></h2>
+    <div id="acctList"></div>
+
+    <form id="formAcct" novalidate>
+      <div class="field" style="margin-top:14px">
+        <label>头像（可不填）</label>
+        <div class="avatar-pick">
+          <button class="av-prev" id="acctAvPrev" type="button" aria-label="选择头像图片">
+            <span id="acctAvFallback">?</span>
+          </button>
+          <div class="av-actions">
+            <button class="btn-ghost av-btn" id="acctAvPick" type="button">从相册选择</button>
+            <button class="btn-ghost av-btn" id="acctAvClear" type="button" hidden>移除图片</button>
+          </div>
+        </div>
+      </div>
+      <div class="field" id="fAcctName">
+        <label for="acctName">新账户名称</label>
+        <div class="inp"><input id="acctName" type="text" maxlength="10" placeholder="输入小朋友的名字" autocomplete="off" /></div>
+        <div class="err">请输入名字</div>
+      </div>
+      <button class="btn-primary" type="submit">＋ 新建账户（默认 0 星）</button>
+    </form>
+    <p class="note">删除账户会一并清除该账户的积分和历史，操作前会二次确认。</p>
+
+    <!-- single hidden input reused by both the create form and the edit sheet -->
+    <input type="file" id="photoInput" accept="image/*" hidden />
+  </main>
+
+  <!-- ====================== 5 · SETTINGS ====================== -->
+  <main class="view" id="view-settings" hidden>
+    <div class="appbar">
+      <button class="back-btn" data-back aria-label="返回"></button>
+      <div>
+        <h1>设置</h1>
+        <div class="sub" id="setSub">当前账户 · Jiamu</div>
+      </div>
+    </div>
+    <h2 class="section-title"><span class="ic">🛠</span>管理</h2>
+    <button class="acctrow" id="goAddEarn" type="button">
+      <div class="aav" style="background:linear-gradient(135deg,var(--cyan),var(--mint))">✅</div>
+      <div class="txt"><div class="an"><span class="nmtxt">添加积分项</span></div><div class="as" id="setEarnCount">新建可加分的任务</div></div>
+    </button>
+    <button class="acctrow" id="goAddSpend" type="button">
+      <div class="aav" style="background:linear-gradient(135deg,var(--violet),var(--rose))">🎁</div>
+      <div class="txt"><div class="an"><span class="nmtxt">添加兑换项</span></div><div class="as" id="setSpendCount">新建可兑换的奖励</div></div>
+    </button>
+    <button class="acctrow" id="goAccounts" type="button">
+      <div class="aav" style="background:linear-gradient(135deg,var(--gold),#ff9e4d)">👥</div>
+      <div class="txt"><div class="an"><span class="nmtxt">账户管理</span></div><div class="as" id="setAcctCount">0 个账户</div></div>
+    </button>
+    <p class="note" style="margin-top:14px">成为学霸 · 数据保存在本机，卸载应用会一并清除。</p>
+  </main>
+
+  <!-- ====================== SHEET · switch account ====================== -->
+  <div class="modal-scrim" id="sheetScrim" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="grab"></div>
+      <h3 id="sheetTitle">切换账户</h3>
+      <div id="sheetList"></div>
+      <p class="hint">切换后主界面只显示该账户的积分与项目</p>
+    </div>
+  </div>
+
+  <!-- ====================== EDIT ACCOUNT SHEET ====================== -->
+  <div class="modal-scrim" id="editScrim" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="grab"></div>
+      <h3 id="editTitle">编辑账户</h3>
+      <form id="formEdit" novalidate>
+        <div class="field" style="margin-top:12px">
+          <label>头像</label>
+          <div class="avatar-pick">
+            <button class="av-prev" id="editAvPrev" type="button" aria-label="选择头像图片">
+              <span id="editAvFallback">?</span>
+            </button>
+            <div class="av-actions">
+              <button class="btn-ghost av-btn" id="editAvPick" type="button">从相册选择</button>
+              <button class="btn-ghost av-btn" id="editAvClear" type="button" hidden>移除图片</button>
+            </div>
+          </div>
+        </div>
+        <div class="field" id="fEditName">
+          <label for="editName">名称</label>
+          <div class="inp"><input id="editName" type="text" maxlength="10" autocomplete="off" /></div>
+          <div class="err">请输入名字</div>
+        </div>
+        <div class="drow-2">
+          <button class="btn-ghost" id="editCancel" type="button">取消</button>
+          <button class="btn-primary" type="submit">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================== DIALOG · confirm ====================== -->
+  <div class="modal-scrim center" id="confirmScrim" hidden>
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle" aria-describedby="cfBody">
+      <h3 id="cfTitle">确认删除</h3>
+      <p id="cfBody">删除后无法恢复。</p>
+      <div class="drow">
+        <button class="btn-ghost" id="cfNo" type="button">取消</button>
+        <button class="btn-danger" id="cfYes" type="button">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <!-- Outside .view so it never scrolls or reflows the list mid-drag.
+       Anchored to .app (position:relative), not the viewport. -->
+  <div class="delzone" id="delzone" hidden><span class="tr">🗑️</span><span>松开手指拖进垃圾桶</span></div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+</div>
+<script src="js/store.js"></script>
+<script src="js/photo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

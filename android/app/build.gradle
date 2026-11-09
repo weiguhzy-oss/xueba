@@ -1,0 +1,66 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.yazhang.xueba'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.yazhang.xueba'
+        // Adaptive icons require 26; the target device is far newer.
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv('XUEBA_KEYSTORE') ?: 'xueba-release.jks')
+            storePassword System.getenv('XUEBA_STORE_PASS')
+            keyAlias System.getenv('XUEBA_KEY_ALIAS') ?: 'xueba'
+            keyPassword System.getenv('XUEBA_KEY_PASS')
+        }
+    }
+
+    buildTypes {
+        release {
+            // No shrinking: the app is a WebView host with a handful of
+            // classes, so there is nothing meaningful to strip.
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // The web app is authored in ../star-points and copied into assets by
+    // the copyWebApp task below, so there is one source of truth.
+    sourceSets {
+        main {
+            assets.srcDirs += ["$buildDir/webapp"]
+        }
+    }
+
+    lint {
+        abortOnError false
+        // The generated asset dir confuses lint's model task, and there is
+        // nothing for lint to tell us about a WebView host this small.
+        checkReleaseBuilds false
+    }
+}
+
+// Keeps the bundled copy of the web app in step with the authored source in
+// ../star-points, so index.html there stays the single source of truth.
+tasks.register('copyWebApp', Copy) {
+    from "${rootDir}/../star-points"
+    into "$buildDir/webapp/www"
+    include 'index.html', 'css/**', 'js/**'
+}
+
+// Runs before anything reads the asset dirs, so every consumer sees it.
+tasks.named('preBuild') { dependsOn 'copyWebApp' }

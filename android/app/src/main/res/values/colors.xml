@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors css/tokens.css so native chrome and web content agree. -->
+    <color name="void_bg">#070b1f</color>
+    <color name="deep">#0d1430</color>
+    <color name="cyan">#35e4ff</color>
+    <color name="violet">#9b6bff</color>
+    <color name="gold">#ffcf4d</color>
+    <color name="ic_launcher_bg">#FCFCF8</color>
+</resources>

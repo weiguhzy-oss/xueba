@@ -1,0 +1,77 @@
+/* ============================================================
+   积分任务管家 · 星空探险
+   Design tokens frozen from the Open Design export (index.html).
+   Do not substitute framework defaults for these values.
+   ============================================================ */
+:root{
+  /* --- surface / background --- */
+  --void:#070b1f;
+  --deep:#0d1430;
+  --panel:#121a3d;
+  --panel2:#17204a;
+  --sheet-top:#141d44;
+  --sheet-bottom:#101733;
+
+  /* --- foreground --- */
+  --ink:#eaf0ff;
+  --muted:#8b97c9;
+  --line:rgba(140,160,230,.16);
+  --line-strong:rgba(150,170,240,.3);
+
+  /* --- accent --- */
+  --cyan:#35e4ff;
+  --violet:#9b6bff;
+  --gold:#ffcf4d;
+  --mint:#52f6b4;
+  --rose:#ff6b9d;
+  --green:#49e08a;
+  --red:#ff6a78;
+
+  /* --- radius --- */
+  --r:22px;      /* hero / large cards */
+  --rs:14px;     /* list items, buttons */
+  --rx:12px;     /* icon tiles */
+  --rpill:999px;
+
+  /* --- shadow --- */
+  --sh-device:0 30px 70px -20px rgba(0,0,0,.7);
+  --sh-primary:0 8px 24px -8px var(--cyan);
+  --sh-lift:0 22px 40px -10px rgba(0,0,0,.6);
+  --sh-sheet:0 -20px 50px -10px rgba(0,0,0,.6);
+
+  /* --- spacing rhythm (4px base) --- */
+  --sp-1:4px; --sp-2:6px; --sp-3:8px; --sp-4:10px; --sp-5:12px;
+  --sp-6:14px; --sp-7:16px; --sp-8:18px; --sp-9:22px; --sp-10:28px;
+
+  /* --- type scale --- */
+  --fs-micro:10px;
+  --fs-tiny:11px;
+  --fs-cap:12px;
+  --fs-sm:13px;
+  --fs-body:14px;
+  --fs-md:15px;
+  --fs-lg:16px;
+  --fs-title:17px;
+  --fs-h2:20px;
+  /* fluid so a 4-digit total still fits a 360px screen */
+  --fs-display:clamp(64px,19vw,82px);
+  --font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,system-ui,sans-serif;
+
+  /* --- motion --- */
+  --dur-fast:140ms;
+  --dur:220ms;
+  --dur-slow:340ms;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out-back:cubic-bezier(.34,1.56,.64,1);
+
+  /* --- layout --- */
+  --app-max:430px;
+  /* The Android host measures the real status/navigation bar heights and sets
+     --inset-top / --inset-bottom on :root. env() is the browser fallback: it
+     only reflects a display cutout, so on a notchless phone it reads 0 and the
+     status bar would sit on top of the header. */
+  --inset-top:env(safe-area-inset-top,0px);
+  --inset-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:var(--inset-top);
+  --safe-bottom:var(--inset-bottom);
+}
